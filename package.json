@@ -1,0 +1,19 @@
+{
+  "name": "markdown-editor",
+  "version": "1.0.0",
+  "description": "Web-based WYSIWYG Markdown editor for offline use",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@milkdown/core": "^7.18.0",
+    "@milkdown/crepe": "^7.6.2"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0",
+    "vite-plugin-singlefile": "^2.3.0"
+  }
+}

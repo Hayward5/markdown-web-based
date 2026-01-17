@@ -1,0 +1,347 @@
+/* 主應用樣式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    font-family: var(--crepe-font-default);
+    background: var(--crepe-color-background);
+    color: var(--crepe-color-on-background);
+}
+
+/* 工具列 */
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    padding: 0 20px;
+    background: var(--crepe-color-surface);
+    border-bottom: 1px solid var(--crepe-color-outline);
+    box-shadow: var(--crepe-shadow-1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.toolbar-left,
+.toolbar-center,
+.toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--crepe-color-on-background);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.toolbar-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--crepe-font-default);
+    font-size: 0.875rem;
+    color: var(--crepe-color-on-surface);
+    transition: all 0.15s ease;
+}
+
+.toolbar-btn:hover {
+    background: var(--crepe-color-hover);
+}
+
+.toolbar-btn.active {
+    background: var(--crepe-color-selected);
+    color: var(--crepe-color-primary);
+    font-weight: 500;
+}
+
+.toolbar-btn .icon {
+    font-size: 1rem;
+}
+
+.toolbar-btn .label {
+    display: inline;
+}
+
+@media (max-width: 768px) {
+    .toolbar-btn .label {
+        display: none;
+    }
+}
+
+/* 編輯器容器 */
+.editor-container {
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--crepe-color-surface);
+}
+
+#editor {
+    max-width: 900px;
+    margin: 0 auto;
+    min-height: 100%;
+}
+
+/* 預覽容器 */
+.preview-container {
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--crepe-color-surface);
+    padding: 40px 60px;
+}
+
+#preview-content {
+    max-width: 900px;
+    margin: 0 auto;
+    font-family: var(--crepe-font-default);
+    line-height: 1.75;
+}
+
+#preview-content h1,
+#preview-content h2,
+#preview-content h3,
+#preview-content h4,
+#preview-content h5,
+#preview-content h6 {
+    font-family: var(--crepe-font-title);
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+#preview-content h1 {
+    font-size: 2.25rem;
+}
+
+#preview-content h2 {
+    font-size: 1.875rem;
+}
+
+#preview-content h3 {
+    font-size: 1.5rem;
+}
+
+#preview-content p {
+    margin: 0.5rem 0;
+}
+
+#preview-content code {
+    background: var(--crepe-color-inline-area);
+    color: var(--crepe-color-inline-code);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: var(--crepe-font-code);
+}
+
+#preview-content pre {
+    background: var(--crepe-color-inline-area);
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+#preview-content blockquote {
+    border-left: 4px solid var(--crepe-color-primary);
+    padding-left: 16px;
+    color: var(--crepe-color-secondary);
+    margin: 1rem 0;
+}
+
+/* 無序清單階層化符號（循環式：disc → circle → square → □ → disc...） */
+#preview-content ul {
+    list-style-type: disc;
+    /* 第一層：實心圓 */
+    padding-left: 25px;
+    margin: 0.5rem 0;
+}
+
+#preview-content ul ul {
+    list-style-type: circle;
+    /* 第二層：空心圓 */
+}
+
+#preview-content ul ul ul {
+    list-style-type: square;
+    /* 第三層：實心方塊 */
+}
+
+#preview-content ul ul ul ul {
+    list-style-type: '□';
+    /* 第四層：直接使用 Unicode 字符作為 marker */
+}
+
+#preview-content ul ul ul ul>li::marker {
+    content: '□  ';
+    /* 使用 marker 偽元素 */
+}
+
+/* 第五層循環回第一層 */
+#preview-content ul ul ul ul ul {
+    list-style-type: disc;
+}
+
+#preview-content ul ul ul ul ul>li::marker {
+    content: normal;
+    /* 重置 marker，使用 list-style-type */
+}
+
+/* 第六層循環回第二層 */
+#preview-content ul ul ul ul ul ul {
+    list-style-type: circle;
+}
+
+#preview-content ul ul ul ul ul ul>li::marker {
+    content: normal;
+    /* 重置 marker */
+}
+
+/* 第七層循環回第三層 */
+#preview-content ul ul ul ul ul ul ul {
+    list-style-type: square;
+}
+
+#preview-content ul ul ul ul ul ul ul>li::marker {
+    content: normal;
+    /* 重置 marker */
+}
+
+/* 第八層循環回第四層 */
+#preview-content ul ul ul ul ul ul ul ul {
+    list-style-type: '□';
+    /* 空心方塊 */
+}
+
+#preview-content ul ul ul ul ul ul ul ul>li::marker {
+    content: '□  ';
+    /* 使用 marker 偽元素 */
+}
+
+/* 有序清單階層化符號（循環式：1. → (1) → a → i → 1....） */
+#preview-content ol {
+    padding-left: 25px;
+    margin: 0.5rem 0;
+}
+
+/* 第一層：1., 2., 3. */
+#preview-content ol>li {
+    list-style-type: decimal;
+    margin: 4px 0;
+}
+
+/* 第二層：(1), (2), (3) */
+#preview-content ol ol {
+    counter-reset: item;
+    list-style-type: none;
+}
+
+#preview-content ol ol>li::marker {
+    content: "(" counter(item) ") ";
+}
+
+#preview-content ol ol>li {
+    counter-increment: item;
+    margin: 4px 0;
+}
+
+/* 第三層：a, b, c */
+#preview-content ol ol ol>li {
+    list-style-type: lower-alpha;
+    margin: 4px 0;
+}
+
+#preview-content ol ol ol>li::marker {
+    content: normal;
+    /* 重置 marker，使用 list-style-type */
+}
+
+/* 第四層：i, ii, iii */
+#preview-content ol ol ol ol>li {
+    list-style-type: lower-roman;
+    margin: 4px 0;
+}
+
+/* 第五層循環回第一層：1., 2., 3. */
+#preview-content ol ol ol ol ol {
+    counter-reset: none;
+}
+
+#preview-content ol ol ol ol ol>li {
+    list-style-type: decimal;
+    margin: 4px 0;
+}
+
+/* 第六層循環回第二層：(1), (2), (3) */
+#preview-content ol ol ol ol ol ol {
+    counter-reset: item2;
+    list-style-type: none;
+}
+
+#preview-content ol ol ol ol ol ol>li::marker {
+    content: "(" counter(item2) ") ";
+}
+
+#preview-content ol ol ol ol ol ol>li {
+    counter-increment: item2;
+    margin: 4px 0;
+}
+
+/* 第七層循環回第三層：a, b, c */
+#preview-content ol ol ol ol ol ol ol>li {
+    list-style-type: lower-alpha;
+    margin: 4px 0;
+}
+
+#preview-content ol ol ol ol ol ol ol>li::marker {
+    content: normal;
+    /* 重置 marker */
+}
+
+/* 第八層循環回第四層：i, ii, iii */
+#preview-content ol ol ol ol ol ol ol ol>li {
+    list-style-type: lower-roman;
+    margin: 4px 0;
+}
+
+/* 清單項目通用樣式 */
+#preview-content li {
+    margin: 4px 0;
+}
+
+/* 隱藏類別 */
+.hidden {
+    display: none !important;
+}
+
+/* 滾動條樣式 (Chrome) */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--crepe-color-surface-low);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--crepe-color-outline);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--crepe-color-secondary);
+}

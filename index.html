@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown 編輯器</title>
+    <meta name="description" content="離線可用的 WYSIWYG Markdown 編輯器">
+    <link rel="stylesheet" href="/src/style/token.css">
+    <link rel="stylesheet" href="/src/style/theme.css">
+    <link rel="stylesheet" href="/src/style/main.css">
+</head>
+<body>
+    <!-- 工具列 -->
+    <header class="toolbar">
+        <div class="toolbar-left">
+            <h1 class="logo">📝 Markdown 編輯器</h1>
+        </div>
+        <div class="toolbar-center">
+            <button id="btn-edit-mode" class="toolbar-btn active" title="編輯模式">
+                <span class="icon">✏️</span>
+                <span class="label">編輯</span>
+            </button>
+            <button id="btn-preview-mode" class="toolbar-btn" title="預覽模式">
+                <span class="icon">👁️</span>
+                <span class="label">預覽</span>
+            </button>
+        </div>
+        <div class="toolbar-right">
+            <button id="btn-open" class="toolbar-btn" title="開啟檔案 (Ctrl+O)">
+                <span class="icon">📂</span>
+                <span class="label">開啟</span>
+            </button>
+            <button id="btn-save" class="toolbar-btn" title="儲存檔案 (Ctrl+S)">
+                <span class="icon">💾</span>
+                <span class="label">儲存</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- 編輯器容器 -->
+    <main class="editor-container">
+        <div id="editor"></div>
+    </main>
+
+    <!-- 預覽容器（預覽模式時使用） -->
+    <main class="preview-container" style="display: none;">
+        <div id="preview-content"></div>
+    </main>
+
+    <!-- 隱藏的檔案輸入 -->
+    <input type="file" id="file-input" accept=".txt,.md" style="display: none;">
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
