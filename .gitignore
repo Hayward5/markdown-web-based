@@ -15,3 +15,5 @@ yarn-error.log*
 
 # AI Context (Optional: remove if you want to track AI history in git)
 # .gemini/
+
+debug.txt

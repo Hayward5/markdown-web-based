@@ -174,15 +174,23 @@ async function handleFileSelect(event) {
     if (!file) return;
 
     try {
+        if (file.size === 0) {
+            throw new Error('檔案為空白，請確認內容後再開啟。');
+        }
         const content = await openFile(file);
         state.editor.setContent(content);
         state.currentFilename = file.name;
         state.markdown = content;
+        if (state.mode === 'preview') {
+            await updatePreview();
+        }
         console.log(`已開啟檔案：${file.name}`);
     } catch (error) {
+        const message = error instanceof Error ? error.message : '開啟檔案失敗，請確認檔案格式正確。';
         console.error('開啟檔案失敗：', error);
-        alert('開啟檔案失敗，請確認檔案格式正確。');
+        alert(message);
     }
+
 
     // 重置 input 以便重複選擇同一檔案
     event.target.value = '';

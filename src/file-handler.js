@@ -27,16 +27,24 @@ export function openFile(file) {
         const reader = new FileReader();
 
         reader.onload = (event) => {
-            resolve(event.target.result);
+            const result = event?.target?.result;
+            if (typeof result !== 'string') {
+                reject(new Error('檔案內容無法解析為文字。'));
+                return;
+            }
+            resolve(result);
         };
 
-        reader.onerror = (error) => {
-            reject(error);
+        reader.onerror = () => {
+            const error = reader.error;
+            const reason = error?.name ? `讀取檔案失敗：${error.name}` : '讀取檔案失敗。';
+            reject(new Error(reason));
         };
 
         reader.readAsText(file, 'UTF-8');
     });
 }
+
 
 
 

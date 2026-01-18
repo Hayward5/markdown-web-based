@@ -1,6 +1,8 @@
 // 編輯器管理模組 - 參考 vscode-main 的 EditorManager
 import { Crepe } from '@milkdown/crepe';
 import { editorViewCtx, serializerCtx } from '@milkdown/core';
+import { replaceAll } from '@milkdown/kit/utils';
+
 
 // 引入 Crepe 預設樣式（排除 latex.css 以減少字體檔案）
 import '@milkdown/crepe/theme/common/prosemirror.css';
@@ -111,9 +113,13 @@ export class EditorManager {
      * @param {string} markdown - Markdown 內容
      */
     setContent(markdown) {
-        if (!this.crepe) return;
-        this.crepe.setMarkdown(markdown);
+        if (!this.editor) return;
+
+        this.editor.action((ctx) => {
+            replaceAll(markdown)(ctx);
+        });
     }
+
 
     /**
      * 註冊內容變更回調
