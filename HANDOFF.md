@@ -1,15 +1,15 @@
 # 專案交接與開發指南
 
-本文件旨在協助您將專案遷移至新環境並順利恢復開發。人工智慧助手（AI）已將目前的開發進度與脈絡打包於 `docs/ai_handoff` 資料夾中。
+本文件旨在協助您將專案遷移至新環境並順利恢復開發。人工智慧助手（AI）已將目前的開發進度與脈絡整理於 `.ai-context/` 資料夾中。
 
 ## 📁 專案結構
 
 - `src/` - 原始碼目錄 (main.js, style.css 等)
 - `index.html` - 應用程式入口
 - `vite.config.js` - 建構設定
-- `docs/ai_handoff/` - **AI 交接資料 (核心)**
+- `.ai-context/` - **AI 交接資料 (核心)**
   - `task.md`: 任務追蹤清單，記錄了所有已完成與未完成的項目。
-  - `walkthrough.md`: 功能開發歷程與技術細節報告 (包含清單修復細節)。
+  - `handoff.md`: 專案交接摘要（含近期修正）。
   - `implementation_plan.md`: 實施計畫文件。
 
 ## 🚀 如何上傳至 GitHub
@@ -49,10 +49,10 @@ git commit -m "Initial commit: Project handover with AI context"
    ```
 
 4. **讓 AI 接手**：
-   當您在新環境使用 AI 助手時，請告知它：「請查看 `docs/ai_handoff/walkthrough.md` 和 `task.md` 來了解專案進度。」
-   這樣 AI 就能完全掌握之前的開發脈絡（包含清單樣式修復等細節）。
+   當您在新環境使用 AI 助手時，請告知它：「請查看 `.ai-context/handoff.md` 和 `.ai-context/task.md` 來了解專案進度。」
+   這樣 AI 就能完全掌握之前的開發脈絡（包含清單修復細節）。
 
 ## 🧹 清理項目
 
-- `vscode-main/` 資料夾已被識別為舊有範本或無用資料，建議刪除以減少專案體積。
+- `vscode-main/` 資料夾為 Milkdown 參考原始碼，可保留作為查閱。
 - `dist/` 資料夾是建構產物，不需要上傳。

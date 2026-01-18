@@ -19,11 +19,17 @@
   - [x] src/style/token.css
   - [x] src/style/theme.css
   - [x] src/style/main.css
+- [x] 編輯體驗修正
+  - [x] 開啟檔案錯誤修正（改用 replaceAll）
+  - [x] 預覽模式開檔同步更新
+  - [x] 預覽 task list marker 移除
+  - [x] Backspace 退出清單並移出段落
 - [/] 安裝與測試
-  - [ ] npm install
+  - [x] npm install
   - [ ] npm run dev 測試
 
 ## 驗證階段
 - [ ] 開發模式測試
-- [ ] 打包離線版本
+- [x] 打包離線版本
 - [ ] Chrome 離線測試
+

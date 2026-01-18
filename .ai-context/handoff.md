@@ -20,6 +20,13 @@
 
 ## 已完成的工作
 
+### ✅ 近期修正
+- 開啟檔案錯誤修正（移除 setMarkdown，改用 replaceAll）
+- 預覽模式開檔同步更新
+- 預覽 task list marker 移除（含巢狀）
+- Backspace 退出清單行為：移出段落並重建清單上下區塊
+
+
 ### ✅ 專案結構（已建立）
 ```
 markdown-web-based/
@@ -45,10 +52,12 @@ markdown-web-based/
 - 純預覽模式
 - Slash 命令 (`/h1`, `/ul`, `/code` 等)
 - 清單自動行為（Enter 續行、Tab 縮排）
+- 清單退出行為（Backspace 移除 marker 後移出清單）
 - 檔案操作（開啟/儲存 TXT）
 - 護眼 Arctic Frost 主題
 - 繁中 + 英文支援
 - 僅支援 Google Chrome
+
 
 ---
 
