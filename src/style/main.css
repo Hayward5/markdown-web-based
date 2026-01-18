@@ -170,6 +170,16 @@ body {
     margin: 0.5rem 0;
 }
 
+/* 任務清單（預覽）移除所有層級 marker */
+#preview-content ul:has(input[type="checkbox"]),
+#preview-content ol:has(input[type="checkbox"]),
+#preview-content li:has(input[type="checkbox"]),
+#preview-content li:has(input[type="checkbox"])::marker {
+    list-style: none;
+    content: none;
+}
+
+
 #preview-content ul ul {
     list-style-type: circle;
     /* 第二層：空心圓 */
