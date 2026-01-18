@@ -2,7 +2,7 @@
 
 ## 規劃階段
 - [x] 研究 Skills 和設計指南
-- [x] 下載離線套件 (html2pdf.js)
+- [x] 下載離線套件（已移除 PDF 功能）
 - [x] 分析 vscode-main 架構 (Milkdown/Crepe)
 - [x] 撰寫實作計畫（方案 A：Vite + Milkdown）
 - [x] 使用者審核通過

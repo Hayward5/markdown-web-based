@@ -27,7 +27,6 @@ const elements = {
     btnPreviewMode: null,
     btnOpen: null,
     btnSave: null,
-    btnExportPdf: null,
     fileInput: null,
     editorContainer: null,
     previewContainer: null,
@@ -43,7 +42,6 @@ async function init() {
     elements.btnPreviewMode = document.getElementById('btn-preview-mode');
     elements.btnOpen = document.getElementById('btn-open');
     elements.btnSave = document.getElementById('btn-save');
-    elements.btnExportPdf = document.getElementById('btn-export-pdf');
     elements.fileInput = document.getElementById('file-input');
     elements.editorContainer = document.querySelector('.editor-container');
     elements.previewContainer = document.querySelector('.preview-container');

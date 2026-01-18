@@ -9,7 +9,7 @@
 - `vite.config.js` - 建構設定
 - `docs/ai_handoff/` - **AI 交接資料 (核心)**
   - `task.md`: 任務追蹤清單，記錄了所有已完成與未完成的項目。
-  - `walkthrough.md`: 功能開發歷程與技術細節報告 (包含清單修復與 PDF 優化細節)。
+  - `walkthrough.md`: 功能開發歷程與技術細節報告 (包含清單修復細節)。
   - `implementation_plan.md`: 實施計畫文件。
 
 ## 🚀 如何上傳至 GitHub
@@ -50,7 +50,7 @@ git commit -m "Initial commit: Project handover with AI context"
 
 4. **讓 AI 接手**：
    當您在新環境使用 AI 助手時，請告知它：「請查看 `docs/ai_handoff/walkthrough.md` 和 `task.md` 來了解專案進度。」
-   這樣 AI 就能完全掌握之前的開發脈絡（包含已移除 PDF 功能、清單樣式修復等細節）。
+   這樣 AI 就能完全掌握之前的開發脈絡（包含清單樣式修復等細節）。
 
 ## 🧹 清理項目
 
