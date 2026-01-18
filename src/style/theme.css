@@ -177,10 +177,67 @@
             margin: 8px 0;
         }
 
+        ul {
+            list-style-type: none;
+        }
+
+        ul > li::marker {
+            content: '●  ';
+            font-size: 0.95em;
+        }
+
+        ul ul {
+            list-style-type: none;
+        }
+
+        ul ul > li::marker {
+            content: '○  ';
+            font-size: 0.95em;
+        }
+
+
         li {
             margin: 4px 0;
             line-height: 1.75;
         }
+
+        /* 無序清單階層化符號（循環式：● → ○ → ▶ → ▷ → ●...） */
+        ul ul ul {
+            list-style-type: none;
+        }
+
+        ul ul ul > li::marker {
+            content: '▶  ';
+            font-size: 0.95em;
+        }
+
+        ul ul ul ul {
+            list-style-type: none;
+        }
+
+        ul ul ul ul > li::marker {
+            content: '▷  ';
+            font-size: 0.95em;
+        }
+
+        ul ul ul ul ul ul ul {
+            list-style-type: none;
+        }
+
+        ul ul ul ul ul ul ul > li::marker {
+            content: '▶  ';
+            font-size: 0.95em;
+        }
+
+        ul ul ul ul ul ul ul ul {
+            list-style-type: none;
+        }
+
+        ul ul ul ul ul ul ul ul > li::marker {
+            content: '▷  ';
+            font-size: 0.95em;
+        }
+
 
         /* 任務清單 */
         li[data-checked] {

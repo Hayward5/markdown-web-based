@@ -162,12 +162,17 @@ body {
     margin: 1rem 0;
 }
 
-/* 無序清單階層化符號（循環式：disc → circle → square → □ → disc...） */
+/* 無序清單階層化符號（循環式：● → ○ → ▶ → ▷ → ●...） */
 #preview-content ul {
-    list-style-type: disc;
+    list-style-type: none;
     /* 第一層：實心圓 */
     padding-left: 25px;
     margin: 0.5rem 0;
+}
+
+#preview-content ul > li::marker {
+    content: '●  ';
+    font-size: 0.95em;
 }
 
 /* 任務清單（預覽）移除所有層級 marker */
@@ -181,65 +186,79 @@ body {
 
 
 #preview-content ul ul {
-    list-style-type: circle;
+    list-style-type: none;
     /* 第二層：空心圓 */
 }
 
+#preview-content ul ul > li::marker {
+    content: '○  ';
+    font-size: 0.95em;
+}
+
+
 #preview-content ul ul ul {
-    list-style-type: square;
-    /* 第三層：實心方塊 */
+    list-style-type: none;
+    /* 第三層：實心三角 */
+}
+
+#preview-content ul ul ul>li::marker {
+    content: '▶  ';
+    font-size: 0.95em;
 }
 
 #preview-content ul ul ul ul {
-    list-style-type: '□';
-    /* 第四層：直接使用 Unicode 字符作為 marker */
+    list-style-type: none;
+    /* 第四層：空心三角 */
 }
 
 #preview-content ul ul ul ul>li::marker {
-    content: '□  ';
-    /* 使用 marker 偽元素 */
+    content: '▷  ';
+    font-size: 0.95em;
 }
+
 
 /* 第五層循環回第一層 */
 #preview-content ul ul ul ul ul {
-    list-style-type: disc;
+    list-style-type: none;
 }
 
 #preview-content ul ul ul ul ul>li::marker {
-    content: normal;
-    /* 重置 marker，使用 list-style-type */
+    content: '●  ';
+    font-size: 0.95em;
 }
 
 /* 第六層循環回第二層 */
 #preview-content ul ul ul ul ul ul {
-    list-style-type: circle;
+    list-style-type: none;
 }
 
 #preview-content ul ul ul ul ul ul>li::marker {
-    content: normal;
-    /* 重置 marker */
+    content: '○  ';
+    font-size: 0.95em;
 }
+
 
 /* 第七層循環回第三層 */
 #preview-content ul ul ul ul ul ul ul {
-    list-style-type: square;
+    list-style-type: none;
+    /* 第七層循環回第三層（實心三角） */
 }
 
 #preview-content ul ul ul ul ul ul ul>li::marker {
-    content: normal;
-    /* 重置 marker */
+    content: '▶  ';
+    font-size: 0.95em;
 }
 
-/* 第八層循環回第四層 */
+/* 第八層循環回第四層（空心三角） */
 #preview-content ul ul ul ul ul ul ul ul {
-    list-style-type: '□';
-    /* 空心方塊 */
+    list-style-type: none;
 }
 
 #preview-content ul ul ul ul ul ul ul ul>li::marker {
-    content: '□  ';
-    /* 使用 marker 偽元素 */
+    content: '▷  ';
+    font-size: 0.95em;
 }
+
 
 /* 有序清單階層化符號（循環式：1. → (1) → a → i → 1....） */
 #preview-content ol {

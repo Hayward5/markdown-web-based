@@ -24,6 +24,7 @@
   - [x] 預覽模式開檔同步更新
   - [x] 預覽 task list marker 移除
   - [x] Backspace 退出清單並移出段落
+  - [x] 無序清單 marker 依層級改為 ●/○/▶/▷ 並統一大小
 - [/] 安裝與測試
   - [x] npm install
   - [ ] npm run dev 測試
