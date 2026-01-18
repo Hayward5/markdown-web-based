@@ -48,7 +48,15 @@ git commit -m "Initial commit: Project handover with AI context"
    npm run dev
    ```
 
-4. **讓 AI 接手**：
+4. **打包與本地測試**：
+   ```bash
+   npm run build
+   npm run build:singlefile
+   ```
+   - `dist/index.html` 為多檔版本（需搭配 `assets/`）
+   - `dist/testing_index.html` 為單檔版本（可直接雙擊測試）
+
+5. **讓 AI 接手**：
    當您在新環境使用 AI 助手時，請告知它：「請查看 `.ai-context/handoff.md` 和 `.ai-context/task.md` 來了解專案進度。」
    這樣 AI 就能完全掌握之前的開發脈絡（包含清單修復細節）。
 
@@ -56,3 +64,7 @@ git commit -m "Initial commit: Project handover with AI context"
 
 - `vscode-main/` 資料夾為 Milkdown 參考原始碼，可保留作為查閱。
 - `dist/` 資料夾是建構產物，不需要上傳。
+
+## 📌 本地開啟注意事項
+
+多檔版本在 `file://` 會被瀏覽器 CORS 限制阻擋，因此請使用 `dist/testing_index.html` 進行本地雙擊測試，避免手動貼回 JS/CSS。

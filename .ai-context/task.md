@@ -28,6 +28,7 @@
 - [/] 安裝與測試
   - [x] npm install
   - [ ] npm run dev 測試
+  - [ ] npm run build:singlefile 測試
 
 ## 驗證階段
 - [ ] 開發模式測試

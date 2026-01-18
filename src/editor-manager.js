@@ -159,7 +159,8 @@ export class EditorManager {
                 [Crepe.Feature.Latex]: false, // 關閉數學公式以減少字體檔案數量
                 [Crepe.Feature.BlockEdit]: true,
                 [Crepe.Feature.Toolbar]: true,
-                [Crepe.Feature.Slash]: true,
+                [Crepe.Feature.Slash]: false,
+
                 [Crepe.Feature.Placeholder]: true,
             },
             featureConfigs: {

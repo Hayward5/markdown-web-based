@@ -26,6 +26,7 @@
 - 預覽 task list marker 移除（含巢狀）
 - Backspace 退出清單行為：移出段落並重建清單上下區塊
 - 無序清單第 3/4 層改為三角 marker，並統一大小（編輯/預覽一致）
+- Vite 改為多檔輸出，新增 `build:singlefile` 產出 `dist/testing_index.html`
 
 
 ### ✅ 專案結構（已建立）
@@ -68,8 +69,10 @@ markdown-web-based/
 1. `npm install` - 安裝相依套件
 2. `npm run dev` - 開發模式測試
 3. 修正可能的錯誤
-4. `npm run build` - 打包離線版本
-5. 測試 `dist/` 資料夾的離線功能
+4. `npm run build` - 打包多檔版本
+5. `npm run build:singlefile` - 產生 `dist/testing_index.html`（本地雙擊測試）
+6. 測試 `dist/` 與 `testing_index.html` 離線功能
+
 
 ---
 
@@ -102,9 +105,11 @@ npm run build
 1. 執行 `npm install` 安裝套件
 2. 執行 `npm run dev` 測試開發模式
 3. 如有錯誤，根據錯誤訊息修正程式碼
-4. 確認功能正常後，執行 `npm run build` 打包
-5. 測試 `dist/` 資料夾是否可離線運作
-6. 建立 walkthrough.md 記錄驗證結果
+4. 確認功能正常後，執行 `npm run build` 產生多檔版本
+5. 執行 `npm run build:singlefile` 產生 `dist/testing_index.html`
+6. 測試 `dist/` 與 `testing_index.html` 是否可離線運作
+7. 建立 walkthrough.md 記錄驗證結果
+
 
 ---
 
