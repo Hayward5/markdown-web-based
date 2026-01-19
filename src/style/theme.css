@@ -1,0 +1,273 @@
+/* Milkdown 編輯器主題樣式 - 參考 vscode-main */
+.milkdown {
+    position: relative;
+    height: 100%;
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    button,
+    input {
+        border: none;
+        background: none;
+        box-shadow: none;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    :focus-visible {
+        outline: none;
+    }
+
+    font-family: var(--crepe-font-default);
+    color: var(--crepe-color-on-background);
+    background: var(--crepe-color-background);
+
+    .ProseMirror-focused {
+        outline: none;
+    }
+
+    .ProseMirror {
+        padding: 40px 60px;
+        min-height: calc(100vh - 60px);
+
+        *::selection {
+            background: var(--crepe-color-selected);
+        }
+
+        li.ProseMirror-selectednode {
+            background: var(--crepe-color-selected);
+            outline: none;
+        }
+
+        .ProseMirror-selectednode {
+            background: color-mix(in srgb, var(--crepe-color-selected), transparent 60%);
+            outline: none;
+        }
+
+        img {
+            vertical-align: bottom;
+            max-width: 100%;
+
+            &.ProseMirror-selectednode {
+                background: none;
+                outline: 2px solid var(--crepe-color-primary);
+            }
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: var(--crepe-font-title);
+            font-weight: 600;
+            padding: 2px 0;
+            color: var(--crepe-color-on-background);
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            line-height: 1.2;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.875rem;
+            line-height: 1.25;
+            margin-top: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            line-height: 1.3;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h4 {
+            font-size: 1.25rem;
+            line-height: 1.4;
+            margin-top: 1rem;
+        }
+
+        h5 {
+            font-size: 1.125rem;
+            line-height: 1.4;
+            margin-top: 0.75rem;
+        }
+
+        h6 {
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.5;
+            margin-top: 0.75rem;
+        }
+
+        p {
+            font-size: 1rem;
+            line-height: 1.75;
+            padding: 4px 0;
+        }
+
+        code {
+            color: var(--crepe-color-inline-code);
+            background: var(--crepe-color-inline-area);
+            font-family: var(--crepe-font-code);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.875em;
+        }
+
+        a {
+            color: var(--crepe-color-primary);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        pre {
+            background: var(--crepe-color-inline-area);
+            padding: 16px;
+            border-radius: 8px;
+            margin: 8px 0;
+            overflow-x: auto;
+
+            code {
+                padding: 0;
+                background: transparent;
+            }
+        }
+
+        blockquote {
+            position: relative;
+            padding-left: 24px;
+            margin: 8px 0;
+            color: var(--crepe-color-secondary);
+
+            &::before {
+                content: '';
+                width: 4px;
+                left: 0;
+                top: 4px;
+                bottom: 4px;
+                position: absolute;
+                background: var(--crepe-color-primary);
+                border-radius: 4px;
+            }
+        }
+
+        hr {
+            border: none;
+            height: 1px;
+            background: var(--crepe-color-outline);
+            margin: 24px 0;
+        }
+
+        ul,
+        ol {
+            padding-left: 24px;
+            margin: 8px 0;
+        }
+
+        ul {
+            list-style-type: none;
+        }
+
+        ul > li::marker {
+            content: '●  ';
+            font-size: 0.95em;
+        }
+
+        ul ul {
+            list-style-type: none;
+        }
+
+        ul ul > li::marker {
+            content: '○  ';
+            font-size: 0.95em;
+        }
+
+
+        li {
+            margin: 4px 0;
+            line-height: 1.75;
+        }
+
+        /* 無序清單階層化符號（循環式：● → ○ → ▶ → ▷ → ●...） */
+        ul ul ul {
+            list-style-type: none;
+        }
+
+        ul ul ul > li::marker {
+            content: '▶  ';
+            font-size: 0.95em;
+        }
+
+        ul ul ul ul {
+            list-style-type: none;
+        }
+
+        ul ul ul ul > li::marker {
+            content: '▷  ';
+            font-size: 0.95em;
+        }
+
+        ul ul ul ul ul ul ul {
+            list-style-type: none;
+        }
+
+        ul ul ul ul ul ul ul > li::marker {
+            content: '▶  ';
+            font-size: 0.95em;
+        }
+
+        ul ul ul ul ul ul ul ul {
+            list-style-type: none;
+        }
+
+        ul ul ul ul ul ul ul ul > li::marker {
+            content: '▷  ';
+            font-size: 0.95em;
+        }
+
+
+        /* 任務清單 */
+        li[data-checked] {
+            list-style: none;
+            margin-left: -24px;
+            padding-left: 24px;
+        }
+
+        li[data-checked="true"] {
+            text-decoration: line-through;
+            color: var(--crepe-color-secondary);
+        }
+
+        /* 表格 */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 16px 0;
+        }
+
+        th,
+        td {
+            border: 1px solid var(--crepe-color-outline);
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: var(--crepe-color-surface-low);
+            font-weight: 600;
+        }
+    }
+}
