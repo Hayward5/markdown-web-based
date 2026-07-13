@@ -176,12 +176,48 @@ body {
 }
 
 /* 任務清單（預覽）移除所有層級 marker */
-#preview-content ul:has(input[type="checkbox"]),
-#preview-content ol:has(input[type="checkbox"]),
-#preview-content li:has(input[type="checkbox"]),
-#preview-content li:has(input[type="checkbox"])::marker {
+#preview-content li:has(> input[type="checkbox"]),
+#preview-content li:has(> p:first-child > input[type="checkbox"]),
+#preview-content li:has(> input[type="checkbox"])::marker,
+#preview-content li:has(> p:first-child > input[type="checkbox"])::marker {
     list-style: none;
     content: none;
+}
+
+#preview-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+    display: block;
+    overflow-x: auto;
+}
+
+#preview-content th,
+#preview-content td {
+    border: 1px solid var(--crepe-color-outline);
+    padding: 8px 12px;
+    text-align: left;
+}
+
+#preview-content th { background: var(--crepe-color-surface-low); }
+#preview-content img { max-width: 100%; height: auto; }
+
+.toolbar-btn:focus-visible,
+.milkdown button:focus-visible {
+    outline: 2px solid var(--crepe-color-primary);
+    outline-offset: 2px;
+}
+
+.document-status { font-size: 0.75rem; color: var(--crepe-color-secondary); }
+.app-message { position: fixed; top: 64px; right: 16px; z-index: 200; max-width: min(420px, calc(100vw - 32px)); padding: 10px 14px; border: 1px solid var(--crepe-color-outline); border-radius: 8px; background: var(--crepe-color-surface); }
+.app-message[data-kind="error"] { color: var(--crepe-color-error); }
+
+@media (max-width: 600px) {
+    .milkdown .ProseMirror,
+    .preview-container { padding: 24px 16px; }
+    .logo { max-width: 120px; line-height: 1.2; }
+    .toolbar { flex-wrap: wrap; }
+    .toolbar-left, .toolbar-center, .toolbar-right { min-width: 0; }
 }
 
 

@@ -1,5 +1,13 @@
-// 編輯器管理模組 - 參考 vscode-main 的 EditorManager
-import { Crepe } from '@milkdown/crepe';
+// Milkdown/Crepe 編輯器管理模組
+import { CrepeBuilder } from '@milkdown/crepe/builder';
+import { blockEdit } from '@milkdown/crepe/feature/block-edit';
+import { cursor } from '@milkdown/crepe/feature/cursor';
+import { imageBlock } from '@milkdown/crepe/feature/image-block';
+import { linkTooltip } from '@milkdown/crepe/feature/link-tooltip';
+import { listItem } from '@milkdown/crepe/feature/list-item';
+import { placeholder } from '@milkdown/crepe/feature/placeholder';
+import { table } from '@milkdown/crepe/feature/table';
+import { toolbar } from '@milkdown/crepe/feature/toolbar';
 import { editorViewCtx, serializerCtx } from '@milkdown/core';
 import { $prose, replaceAll } from '@milkdown/kit/utils';
 import { Plugin, PluginKey, TextSelection } from '@milkdown/prose/state';
@@ -10,7 +18,6 @@ import { Fragment } from '@milkdown/prose/model';
 import '@milkdown/crepe/theme/common/prosemirror.css';
 import '@milkdown/crepe/theme/common/reset.css';
 import '@milkdown/crepe/theme/common/block-edit.css';
-import '@milkdown/crepe/theme/common/code-mirror.css';
 import '@milkdown/crepe/theme/common/cursor.css';
 import '@milkdown/crepe/theme/common/image-block.css';
 import '@milkdown/crepe/theme/common/link-tooltip.css';
@@ -148,27 +155,15 @@ export class EditorManager {
             });
         });
 
-        const crepe = new Crepe({
-            root: '#editor',
-            defaultValue: defaultValue,
-            // 功能設定
-            features: {
-                [Crepe.Feature.ListItem]: true,
-                [Crepe.Feature.TaskList]: true,
-                [Crepe.Feature.CodeMirror]: false, // 關閉語法高亮以減少 JS 檔案數量
-                [Crepe.Feature.Latex]: false, // 關閉數學公式以減少字體檔案數量
-                [Crepe.Feature.BlockEdit]: true,
-                [Crepe.Feature.Toolbar]: true,
-                [Crepe.Feature.Slash]: false,
-
-                [Crepe.Feature.Placeholder]: true,
-            },
-            featureConfigs: {
-                [Crepe.Feature.Placeholder]: {
-                    text: '輸入 / 開啟命令選單，或開始編寫 Markdown...',
-                },
-            },
-        });
+        const crepe = new CrepeBuilder({ root: '#editor', defaultValue })
+            .addFeature(cursor)
+            .addFeature(listItem)
+            .addFeature(linkTooltip)
+            .addFeature(imageBlock)
+            .addFeature(blockEdit)
+            .addFeature(placeholder, { text: '輸入 / 開啟命令選單，或開始編寫 Markdown...' })
+            .addFeature(toolbar)
+            .addFeature(table);
 
         // 設定事件監聽
         this.setupListeners(crepe);

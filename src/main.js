@@ -1,23 +1,22 @@
 // 主入口點
 import { EditorManager } from './editor-manager.js';
-import { saveAsTxt, openFile, triggerFileSelect } from './file-handler.js';
+import {
+    downloadText, isPickerUnavailableError, pickOpenDocument, pickSaveHandle,
+    readUtf8File, triggerFileSelect, writeFileHandle,
+} from './file-handler.js';
+import { DocumentSession } from './document/document-session.js';
+import { renderPreview } from './preview/preview-renderer.js';
+import { createDraftRecord, createDraftScheduler, DraftStore } from './storage/draft-store.js';
 
-// 動態載入 marked.js 用於預覽渲染
-let marked = null;
-async function loadMarked() {
-    if (!marked) {
-        const module = await import('../lib/marked.min.js');
-        marked = module.marked || module.default || window.marked;
-    }
-    return marked;
-}
+const initialContent = getDefaultContent();
+const session = new DocumentSession({ filename: 'document.md', content: initialContent });
+let draftStore = null;
+let draftScheduler = null;
 
 // 應用程式狀態
 const state = {
     mode: 'edit', // 'edit' | 'preview'
-    currentFilename: 'document.txt',
     editor: null,
-    markdown: ''
 };
 
 // DOM 元素
@@ -27,10 +26,13 @@ const elements = {
     btnPreviewMode: null,
     btnOpen: null,
     btnSave: null,
+    btnSaveAs: null,
     fileInput: null,
     editorContainer: null,
     previewContainer: null,
-    previewContent: null
+    previewContent: null,
+    documentStatus: null,
+    appMessage: null,
 };
 
 /**
@@ -42,18 +44,23 @@ async function init() {
     elements.btnPreviewMode = document.getElementById('btn-preview-mode');
     elements.btnOpen = document.getElementById('btn-open');
     elements.btnSave = document.getElementById('btn-save');
+    elements.btnSaveAs = document.getElementById('btn-save-as');
     elements.fileInput = document.getElementById('file-input');
     elements.editorContainer = document.querySelector('.editor-container');
     elements.previewContainer = document.querySelector('.preview-container');
     elements.previewContent = document.getElementById('preview-content');
+    elements.documentStatus = document.getElementById('document-status');
+    elements.appMessage = document.getElementById('app-message');
 
     // 建立編輯器
     state.editor = new EditorManager();
-    await state.editor.create(getDefaultContent());
+    await state.editor.create(initialContent);
 
     // 監聽編輯器變更
     state.editor.onChange((markdown) => {
-        state.markdown = markdown;
+        session.updateContent(markdown);
+        updateDocumentStatus();
+        draftScheduler?.schedule(createDraftRecord({ filename: session.filename, content: session.content }));
     });
 
     // 綁定事件
@@ -61,6 +68,8 @@ async function init() {
 
     // 註冊快捷鍵
     registerKeyboardShortcuts();
+    updateDocumentStatus();
+    await restoreDraft();
 
     console.log('Markdown 編輯器已初始化');
 }
@@ -120,8 +129,9 @@ function bindEvents() {
     elements.btnPreviewMode.addEventListener('click', () => switchMode('preview'));
 
     // 檔案操作
-    elements.btnOpen.addEventListener('click', () => triggerFileSelect(elements.fileInput));
+    elements.btnOpen.addEventListener('click', handleOpen);
     elements.btnSave.addEventListener('click', handleSave);
+    elements.btnSaveAs.addEventListener('click', () => handleSave({ saveAs: true }));
 
     // 檔案選擇
     elements.fileInput.addEventListener('change', handleFileSelect);
@@ -155,15 +165,49 @@ function switchMode(mode) {
 async function updatePreview() {
     const markdown = state.editor.getContent();
 
-    // 使用 marked 渲染 Markdown 為 HTML
-    const markedLib = await loadMarked();
-    if (markedLib && markedLib.parse) {
-        const html = markedLib.parse(markdown);
-        elements.previewContent.innerHTML = html;
-    } else {
-        // 備用方案：直接顯示 Markdown 文字
+    try {
+        elements.previewContent.innerHTML = renderPreview(markdown);
+    } catch (error) {
+        console.error('預覽失敗：', error);
         elements.previewContent.textContent = markdown;
     }
+}
+
+async function restoreDraft() {
+    try {
+        draftStore = new DraftStore();
+        draftScheduler = createDraftScheduler({ store: draftStore });
+        const draft = await draftStore.loadLatest();
+        if (!draft) return;
+        if (window.confirm('找到未儲存草稿，是否復原？')) {
+            applyOpenedDocument({ filename: draft.filename, content: draft.markdown });
+        } else {
+            await draftStore.clearLatest();
+        }
+    } catch (error) {
+        console.error('草稿不可用：', error);
+        showStatus('自動草稿不可用，請使用手動儲存。', 'warning');
+    }
+}
+
+function updateDocumentStatus() {
+    const dirty = session.isDirty ? ' • 未儲存' : '';
+    elements.documentStatus.textContent = `${session.filename}${dirty}`;
+    document.title = `${session.isDirty ? '* ' : ''}${session.filename} — Markdown 編輯器`;
+}
+
+function showStatus(message, kind = 'info') {
+    elements.appMessage.textContent = message;
+    elements.appMessage.dataset.kind = kind;
+    elements.appMessage.hidden = !message;
+}
+
+function showError(message) {
+    showStatus(message, 'error');
+}
+
+function confirmDiscardChanges() {
+    return !session.isDirty || window.confirm('目前文件尚未儲存，確定要捨棄變更嗎？');
 }
 
 /**
@@ -173,22 +217,19 @@ async function handleFileSelect(event) {
     const file = event.target.files[0];
     if (!file) return;
 
+    if (!confirmDiscardChanges()) {
+        event.target.value = '';
+        return;
+    }
+
     try {
-        if (file.size === 0) {
-            throw new Error('檔案為空白，請確認內容後再開啟。');
-        }
-        const content = await openFile(file);
-        state.editor.setContent(content);
-        state.currentFilename = file.name;
-        state.markdown = content;
-        if (state.mode === 'preview') {
-            await updatePreview();
-        }
+        const content = await readUtf8File(file);
+        applyOpenedDocument({ filename: file.name, content });
         console.log(`已開啟檔案：${file.name}`);
     } catch (error) {
         const message = error instanceof Error ? error.message : '開啟檔案失敗，請確認檔案格式正確。';
         console.error('開啟檔案失敗：', error);
-        alert(message);
+        showError(message);
     }
 
 
@@ -196,14 +237,64 @@ async function handleFileSelect(event) {
     event.target.value = '';
 }
 
+function applyOpenedDocument({ filename, content, handle = null }) {
+    draftScheduler?.cancel();
+    state.editor.setContent(content);
+    session.load({ filename, content: state.editor.getContent(), handle });
+    updateDocumentStatus();
+    if (state.mode === 'preview') updatePreview();
+}
+
+async function handleOpen() {
+    if (!confirmDiscardChanges()) return;
+    if (typeof window.showOpenFilePicker !== 'function') {
+        triggerFileSelect(elements.fileInput);
+        return;
+    }
+    try {
+        const documentData = await pickOpenDocument();
+        if (documentData) applyOpenedDocument(documentData);
+    } catch (error) {
+        if (isPickerUnavailableError(error)) {
+            triggerFileSelect(elements.fileInput);
+            return;
+        }
+        showError(`開啟檔案失敗：${error.message}`);
+    }
+}
+
 /**
  * 處理儲存
  */
-function handleSave() {
+async function handleSave({ saveAs = false } = {}) {
     const content = state.editor.getContent();
-    const filename = state.currentFilename.replace(/\.[^/.]+$/, '') + '.txt';
-    saveAsTxt(content, filename);
-    console.log(`已儲存檔案：${filename}`);
+    session.updateContent(content);
+    try {
+        let handle = saveAs ? null : session.handle;
+        if (!handle && typeof window.showSaveFilePicker === 'function') {
+            handle = await pickSaveHandle(session.filename);
+            if (!handle) return;
+        }
+        if (!handle) {
+            downloadText(content, session.filename);
+            showStatus('已下載副本，但原始文件尚未覆寫。');
+            updateDocumentStatus();
+            return;
+        }
+        await writeFileHandle(handle, content);
+        session.markSaved({ handle, filename: handle.name });
+        draftScheduler?.cancel();
+        await draftStore?.clearLatest();
+        updateDocumentStatus();
+    } catch (error) {
+        if (isPickerUnavailableError(error)
+            && window.confirm('無法使用原檔覆寫，是否改為下載副本？')) {
+            downloadText(content, session.filename);
+            updateDocumentStatus();
+            return;
+        }
+        showError(`儲存失敗：${error.message}`);
+    }
 }
 
 /**
@@ -230,4 +321,15 @@ function registerKeyboardShortcuts() {
 }
 
 // 啟動應用程式
-document.addEventListener('DOMContentLoaded', init);
+window.addEventListener('beforeunload', (event) => {
+    if (!session.isDirty) return;
+    event.preventDefault();
+    event.returnValue = '';
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    init().catch((error) => {
+        console.error('Markdown 編輯器初始化失敗：', error);
+        showError(`編輯器初始化失敗：${error.message}`);
+    });
+});

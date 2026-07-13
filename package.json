@@ -6,16 +6,29 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:singlefile": "VITE_SINGLEFILE=true vite build --outDir dist-single && mkdir -p dist && mv dist-single/index.html dist/testing_index.html && rm -rf dist-single",
-    "preview": "vite preview"
+    "build:release": "node scripts/build-singlefile.mjs",
+    "verify:offline": "node scripts/verify-offline-build.mjs",
+    "preview": "vite preview",
+    "test:unit": "node --test",
+    "test:ui": "node tests/ui/offline-editor.mjs"
   },
 
   "dependencies": {
-    "@milkdown/core": "^7.18.0",
-    "@milkdown/crepe": "^7.6.2"
+    "@milkdown/core": "7.21.3",
+    "@milkdown/crepe": "7.21.3",
+    "dompurify": "3.4.12",
+    "marked": "18.0.6"
   },
   "devDependencies": {
-    "vite": "^5.4.0",
-    "vite-plugin-singlefile": "^2.3.0"
+    "playwright-core": "1.61.1",
+    "vite": "8.1.4",
+    "vite-plugin-singlefile": "2.3.3"
+  },
+  "overrides": {
+    "lodash-es": "4.18.1",
+    "postcss": "8.5.18"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
   }
 }

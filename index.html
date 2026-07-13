@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+          content="connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; img-src 'self' data: blob: file:">
     <title>Markdown 編輯器</title>
     <meta name="description" content="離線可用的 WYSIWYG Markdown 編輯器">
     <link rel="stylesheet" href="/src/style/token.css">
@@ -14,6 +16,7 @@
     <header class="toolbar">
         <div class="toolbar-left">
             <h1 class="logo">📝 Markdown 編輯器</h1>
+            <span id="document-status" class="document-status" aria-live="polite"></span>
         </div>
         <div class="toolbar-center">
             <button id="btn-edit-mode" class="toolbar-btn active" title="編輯模式">
@@ -34,8 +37,13 @@
                 <span class="icon">💾</span>
                 <span class="label">儲存</span>
             </button>
+            <button id="btn-save-as" class="toolbar-btn" title="另存新檔">
+                <span class="icon">📝</span>
+                <span class="label">另存新檔</span>
+            </button>
         </div>
     </header>
+    <div id="app-message" class="app-message" role="status" aria-live="polite" hidden></div>
 
     <!-- 編輯器容器 -->
     <main class="editor-container">

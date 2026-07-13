@@ -1,57 +1,72 @@
-// 檔案處理模組 - 開啟、儲存 TXT
+export const MAX_WARNING_BYTES = 5 * 1024 * 1024;
 
-/**
- * 儲存內容為 TXT 檔案
- * @param {string} content - 要儲存的內容
- * @param {string} filename - 檔案名稱
- */
-export function saveAsTxt(content, filename = 'document.txt') {
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+function defaultConfirmLarge(message) {
+    return typeof window === 'undefined' ? true : window.confirm(message);
+}
+
+export function isPickerUnavailableError(error) {
+    return error?.name === 'SecurityError' || error?.name === 'NotAllowedError';
+}
+
+export function normalizeFilename(name = 'document.md') {
+    const value = String(name || 'document.md');
+    return /\.(?:md|markdown|txt)$/i.test(value) ? value : `${value}.md`;
+}
+
+export async function readUtf8File(file, { confirmLarge = defaultConfirmLarge } = {}) {
+    if (file.size > MAX_WARNING_BYTES && !confirmLarge('檔案超過 5 MiB，開啟可能需要較長時間。是否繼續？')) {
+        throw new Error('已取消開啟大型檔案。');
+    }
+    const bytes = await file.arrayBuffer();
+    try {
+        return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+    } catch {
+        throw new Error('檔案不是有效的 UTF-8 文字，目前只支援 UTF-8。');
+    }
+}
+
+export async function pickOpenDocument() {
+    try {
+        const [handle] = await window.showOpenFilePicker({
+            multiple: false,
+            types: [{ description: 'Markdown／文字檔', accept: { 'text/plain': ['.md', '.markdown', '.txt'] } }],
+        });
+        const file = await handle.getFile();
+        return { handle, filename: file.name, content: await readUtf8File(file) };
+    } catch (error) {
+        if (error?.name === 'AbortError') return null;
+        throw error;
+    }
+}
+
+export async function pickSaveHandle(suggestedName) {
+    try {
+        return await window.showSaveFilePicker({
+            suggestedName: normalizeFilename(suggestedName),
+            types: [{ description: 'Markdown／文字檔', accept: { 'text/plain': ['.md', '.txt'] } }],
+        });
+    } catch (error) {
+        if (error?.name === 'AbortError') return null;
+        throw error;
+    }
+}
+
+export async function writeFileHandle(handle, content) {
+    const writable = await handle.createWritable();
+    await writable.write(String(content ?? ''));
+    await writable.close();
+}
+
+export function downloadText(content, filename = 'document.md') {
+    const blob = new Blob([String(content ?? '')], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
-
     const link = document.createElement('a');
     link.href = url;
-    link.download = filename;
+    link.download = normalizeFilename(filename);
     link.click();
-
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
-/**
- * 開啟 TXT/MD 檔案
- * @param {File} file - 檔案物件
- * @returns {Promise<string>} - 檔案內容
- */
-export function openFile(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-
-        reader.onload = (event) => {
-            const result = event?.target?.result;
-            if (typeof result !== 'string') {
-                reject(new Error('檔案內容無法解析為文字。'));
-                return;
-            }
-            resolve(result);
-        };
-
-        reader.onerror = () => {
-            const error = reader.error;
-            const reason = error?.name ? `讀取檔案失敗：${error.name}` : '讀取檔案失敗。';
-            reject(new Error(reason));
-        };
-
-        reader.readAsText(file, 'UTF-8');
-    });
-}
-
-
-
-
-/**
- * 觸發檔案選擇對話框
- * @param {HTMLInputElement} fileInput - 檔案輸入元素
- */
 export function triggerFileSelect(fileInput) {
     fileInput.click();
 }

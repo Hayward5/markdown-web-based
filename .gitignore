@@ -3,6 +3,12 @@ node_modules/
 
 # Build output
 dist/
+dist-single/
+.release-build/
+
+# Local Chrome UI test environment and release artifacts
+.chrome-ui-test/
+release/
 
 # System files
 .DS_Store
