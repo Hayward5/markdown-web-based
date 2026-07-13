@@ -10,8 +10,10 @@ import { table } from '@milkdown/crepe/feature/table';
 import { toolbar } from '@milkdown/crepe/feature/toolbar';
 import { editorViewCtx, serializerCtx } from '@milkdown/core';
 import { $prose, replaceAll } from '@milkdown/kit/utils';
-import { Plugin, PluginKey, TextSelection } from '@milkdown/prose/state';
+import { NodeSelection, Plugin, PluginKey, TextSelection } from '@milkdown/prose/state';
 import { Fragment } from '@milkdown/prose/model';
+import { BlockTypeMenu, isClickGesture } from './editor/block-type-menu.js';
+import { getBlockType, transformBlockAt } from './editor/block-transform.js';
 
 
 // 引入 Crepe 預設樣式（排除 latex.css 以減少字體檔案）
@@ -33,6 +35,9 @@ export class EditorManager {
         this.editor = null;
         this.crepe = null;
         this.onChangeCallback = null;
+        this.blockHandleCleanup = null;
+        this.blockTypeMenu = null;
+        this.selectedBlock = null;
     }
 
     /**
@@ -174,6 +179,20 @@ export class EditorManager {
 
         this.crepe = crepe;
         this.editor = crepe.editor;
+        this.blockTypeMenu = new BlockTypeMenu({
+            onSelect: (targetType) => {
+                const selectedBlock = this.selectedBlock;
+                this.blockTypeMenu?.hide();
+                if (!selectedBlock) return;
+                this.editor?.action((ctx) => transformBlockAt(
+                    ctx,
+                    selectedBlock.pos,
+                    targetType,
+                    selectedBlock.node
+                ));
+            },
+        });
+        this.setupBlockHandleClick();
 
 
         return this;
@@ -235,6 +254,59 @@ export class EditorManager {
         });
     }
 
+    setupBlockHandleClick() {
+        const root = document.querySelector('#editor');
+        if (!root) return;
+
+        let pointerStart = null;
+        const findDragHandle = (target) => target instanceof Element
+            ? target.closest('.milkdown-block-handle .operation-item:last-child')
+            : null;
+
+        const onPointerDown = (event) => {
+            const handle = findDragHandle(event.target);
+            if (!handle || !root.contains(handle)) return;
+            pointerStart = { x: event.clientX, y: event.clientY, pointerId: event.pointerId, handle };
+        };
+
+        const onPointerUp = (event) => {
+            const handle = findDragHandle(event.target);
+            const start = pointerStart;
+            pointerStart = null;
+            if (!handle || !start || handle !== start.handle || event.pointerId !== start.pointerId) return;
+            if (!isClickGesture(start, { x: event.clientX, y: event.clientY })) return;
+
+            this.editor?.action((ctx) => {
+                const view = ctx.get(editorViewCtx);
+                const { selection } = view.state;
+                if (!(selection instanceof NodeSelection)) return;
+                const currentType = getBlockType(selection.node);
+                if (!currentType) return;
+                this.selectedBlock = { pos: selection.from, node: selection.node };
+                this.blockTypeMenu?.show({
+                    anchorRect: handle.getBoundingClientRect(),
+                    currentType,
+                });
+            });
+        };
+
+        const onPointerCancel = () => { pointerStart = null; };
+        const onDragStart = () => {
+            pointerStart = null;
+            this.blockTypeMenu?.hide();
+        };
+        root.addEventListener('pointerdown', onPointerDown, true);
+        root.addEventListener('pointerup', onPointerUp, true);
+        root.addEventListener('pointercancel', onPointerCancel, true);
+        root.addEventListener('dragstart', onDragStart, true);
+        this.blockHandleCleanup = () => {
+            root.removeEventListener('pointerdown', onPointerDown, true);
+            root.removeEventListener('pointerup', onPointerUp, true);
+            root.removeEventListener('pointercancel', onPointerCancel, true);
+            root.removeEventListener('dragstart', onDragStart, true);
+        };
+    }
+
 
     /**
      * 註冊內容變更回調
@@ -248,6 +320,11 @@ export class EditorManager {
      * 銷毀編輯器
      */
     destroy() {
+        this.blockTypeMenu?.destroy();
+        this.blockTypeMenu = null;
+        this.selectedBlock = null;
+        this.blockHandleCleanup?.();
+        this.blockHandleCleanup = null;
         if (this.crepe) {
             this.crepe.destroy();
             this.crepe = null;

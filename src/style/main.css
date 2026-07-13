@@ -212,6 +212,46 @@ body {
 .app-message { position: fixed; top: 64px; right: 16px; z-index: 200; max-width: min(420px, calc(100vw - 32px)); padding: 10px 14px; border: 1px solid var(--crepe-color-outline); border-radius: 8px; background: var(--crepe-color-surface); }
 .app-message[data-kind="error"] { color: var(--crepe-color-error); }
 
+.block-type-menu {
+    position: fixed;
+    z-index: 300;
+    display: grid;
+    min-width: 180px;
+    max-height: min(420px, calc(100vh - 16px));
+    padding: 6px;
+    overflow-y: auto;
+    border: 1px solid var(--crepe-color-outline);
+    border-radius: 10px;
+    background: var(--crepe-color-surface);
+    box-shadow: var(--crepe-shadow-2);
+}
+
+.block-type-menu[data-show='false'] {
+    display: none;
+}
+
+.block-type-menu button {
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--crepe-color-on-surface);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.block-type-menu button:hover,
+.block-type-menu button:focus-visible {
+    background: var(--crepe-color-hover);
+}
+
+.block-type-menu button.active {
+    background: var(--crepe-color-selected);
+    color: var(--crepe-color-primary);
+    font-weight: 600;
+}
+
 @media (max-width: 600px) {
     .milkdown .ProseMirror,
     .preview-container { padding: 24px 16px; }

@@ -208,6 +208,47 @@ await test('Slash 命令選單可由鍵盤開啟', async () => {
     return { menuVisible: true };
 });
 
+async function openBlockTypeMenu(page, block) {
+    await block.hover();
+    const dragHandle = page.locator('.milkdown-block-handle .operation-item').last();
+    await dragHandle.waitFor({ state: 'visible' });
+    await dragHandle.click();
+    const menu = page.locator('.block-type-menu');
+    await menu.waitFor({ state: 'visible', timeout: 2_000 });
+    return menu;
+}
+
+await test('六點區塊把手可將目前 H1 轉換為 H2', async () => {
+    const { page } = await openApp();
+    await loadVirtualFile(page, 'heading.md', '# 保留的 **標題內容**');
+    const menu = await openBlockTypeMenu(page, page.locator('.ProseMirror h1'));
+    for (const label of [
+        '一般文字', 'Heading 1', 'Heading 2', 'Heading 3', 'Heading 4',
+        'Heading 5', 'Heading 6', '引用', '程式碼區塊',
+    ]) {
+        assert.equal(await menu.getByRole('menuitem', { name: label, exact: true }).count(), 1);
+    }
+    await menu.getByRole('menuitem', { name: 'Heading 2' }).click();
+    const convertedHeading = page.locator('.ProseMirror h2');
+    await convertedHeading.waitFor({ state: 'visible' });
+    assert.equal(await convertedHeading.innerText(), '保留的 標題內容');
+    assert.equal(await convertedHeading.locator('strong').count(), 1);
+    assert.equal(await page.locator('.ProseMirror h1').count(), 0);
+    await page.close();
+    return { convertedTo: 'h2', contentPreserved: true };
+});
+
+await test('六點區塊把手可將目前 H2 轉換為一般文字', async () => {
+    const { page } = await openApp();
+    await loadVirtualFile(page, 'heading.md', '## 轉為段落');
+    const menu = await openBlockTypeMenu(page, page.locator('.ProseMirror h2'));
+    await menu.getByRole('menuitem', { name: '一般文字' }).click();
+    assert.equal(await page.locator('.ProseMirror p').innerText(), '轉為段落');
+    assert.equal(await page.locator('.ProseMirror h2').count(), 0);
+    await page.close();
+    return { convertedTo: 'paragraph', contentPreserved: true };
+});
+
 await test('Ctrl+S 會觸發可讀取的下載檔案', async () => {
     const { page } = await openApp({ initScript: () => {
         Object.defineProperty(window, 'showSaveFilePicker', { value: undefined, configurable: true });
