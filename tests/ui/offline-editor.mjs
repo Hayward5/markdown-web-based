@@ -249,6 +249,38 @@ await test('六點區塊把手可將目前 H2 轉換為一般文字', async () =
     return { convertedTo: 'paragraph', contentPreserved: true };
 });
 
+await test('六點區塊把手可將一般文字轉為引用再轉回一般文字', async () => {
+    const { page } = await openApp();
+    await loadVirtualFile(page, 'quote.md', '引用內容');
+    let menu = await openBlockTypeMenu(page, page.locator('.ProseMirror p'));
+    await menu.getByRole('menuitem', { name: '引用' }).click();
+    const quote = page.locator('.ProseMirror blockquote');
+    await quote.waitFor({ state: 'visible' });
+    assert.equal(await quote.innerText(), '引用內容');
+
+    menu = await openBlockTypeMenu(page, quote);
+    await menu.getByRole('menuitem', { name: '一般文字' }).click();
+    assert.equal(await page.locator('.ProseMirror > p').filter({ hasText: '引用內容' }).innerText(), '引用內容');
+    assert.equal(await page.locator('.ProseMirror blockquote').count(), 0);
+    await page.close();
+    return { quoteRoundTrip: true, contentPreserved: true };
+});
+
+await test('六點區塊把手可將含行內格式的文字轉為程式碼區塊', async () => {
+    const { page } = await openApp();
+    await loadVirtualFile(page, 'code.md', '保留 **粗體文字** 與 [連結](https://example.invalid)');
+    const paragraph = page.locator('.ProseMirror p');
+    const expectedText = await paragraph.innerText();
+    const menu = await openBlockTypeMenu(page, paragraph);
+    await menu.getByRole('menuitem', { name: '程式碼區塊' }).click();
+    const code = page.locator('.ProseMirror pre');
+    await code.waitFor({ state: 'visible' });
+    assert.equal(await code.innerText(), expectedText);
+    assert.equal(await code.locator('strong, a, em').count(), 0);
+    await page.close();
+    return { convertedTo: 'code-block', contentPreserved: true, marksRemoved: true };
+});
+
 await test('Ctrl+S 會觸發可讀取的下載檔案', async () => {
     const { page } = await openApp({ initScript: () => {
         Object.defineProperty(window, 'showSaveFilePicker', { value: undefined, configurable: true });
