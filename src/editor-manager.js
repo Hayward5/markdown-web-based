@@ -182,7 +182,7 @@ export class EditorManager {
         this.blockTypeMenu = new BlockTypeMenu({
             onSelect: (targetType) => {
                 const selectedBlock = this.selectedBlock;
-                this.blockTypeMenu?.hide();
+                this.selectedBlock = null;
                 if (!selectedBlock) return;
                 this.editor?.action((ctx) => transformBlockAt(
                     ctx,

@@ -14,6 +14,10 @@ export function isClickGesture(start, end, threshold = 5) {
     return Math.hypot(end.x - start.x, end.y - start.y) <= threshold;
 }
 
+export function shouldTransformBlock(currentType, targetType) {
+    return Boolean(currentType && targetType && currentType !== targetType);
+}
+
 export class BlockTypeMenu {
     constructor({ onSelect }) {
         this.onSelect = onSelect;
@@ -30,7 +34,12 @@ export class BlockTypeMenu {
             button.setAttribute('role', 'menuitem');
             button.textContent = item.label;
             button.addEventListener('pointerdown', (event) => event.preventDefault());
-            button.addEventListener('click', () => this.onSelect(item.type));
+            button.addEventListener('click', () => {
+                const targetType = button.dataset.blockType;
+                this.hide();
+                if (!shouldTransformBlock(this.currentType, targetType)) return;
+                this.onSelect(targetType);
+            });
             this.element.append(button);
         }
 
@@ -49,6 +58,7 @@ export class BlockTypeMenu {
     }
 
     show({ anchorRect, currentType }) {
+        this.currentType = currentType;
         for (const button of this.element.querySelectorAll('[data-block-type]')) {
             const isCurrent = button.dataset.blockType === currentType;
             button.classList.toggle('active', isCurrent);
